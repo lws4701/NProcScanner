@@ -1,6 +1,40 @@
 
-fn main() {
+use regex::RegexSet;
+use std::error::Error;
+fn main() -> Result<(), Box<dyn Error>> {
+    let language_regexes = RegexSet::new(&[
+        r#""[0-9a-zA-Z]+""#,
+        r"[a-zA-Z]+[0-9a-zA-Z]*",
+        r"[0-9]+.[0-9]+",
+        r"[0-9]+",
+        r"\+",
+        r"-",
+        r"\*",
+        r"/",
+        r"^",
+        r"\(",
+        r"\)",
+        r"\{",
+        r"\}",
+        r"\[",
+        r"\]",
+        r";",
+        r"int",
+        r"float",
+        r"str",
+        r"let",
+        r"var",
+        r"if",
+        r"else",
+        r"while",
+        r"for",
+        r"in",
+        r"break",
+        r"continue",
+        r"func"
+        ]).unwrap();
     println!("Hello, world!");
+    Ok(())
 }
 
 enum Token {
@@ -18,7 +52,10 @@ enum Token {
     CloseParentheses,
     OpenBrace,
     CloseBrace,
+    OpenBracket,
+    CloseBracket,
     Semicolon,
+    Invalid,
 }
 
 impl Token {
@@ -33,12 +70,15 @@ impl Token {
             Token::OpenParentheses => String::from("OPENPAREN"),
             Token::CloseParentheses => String::from("CLOSEPAREN"),
             Token::OpenBrace => String::from("OPENBRACE"),
+            Token::OpenBracket => String::from("OPENBRACKET"),
+            Token::CloseBracket => String::from("OPENBRACKET"),
             Token::CloseBrace => String::from("CLOSEBRACE"),
             Token::Semicolon => String::from("SEMICOLON"),
             Token::Digit(value) => format!("DIGIT: {}", value),
             Token::FloatingPointNumber(value) => format!("FPNUMBER: {}", value),
             Token::Str(value) => format!("STRING: {}", value),
-            Token::Identifier(value) => format!("IDENTIFIER {}", value)
+            Token::Identifier(value) => format!("IDENTIFIER {}", value),
+            _ => String::from("INVALIDTOKEN")
         }
     }
 }
@@ -47,6 +87,7 @@ impl Token {
 enum Keyword {
     INTEGER,
     FLOAT,
+    STRING,
     LET,
     VAR,
     IF,
@@ -55,7 +96,8 @@ enum Keyword {
     FOR,
     BREAK,
     CONTINUE,
-    FUNCTION
+    FUNCTION,
+    IN
 }
 
 impl Keyword {
@@ -71,7 +113,9 @@ impl Keyword {
                 Keyword::INTEGER => String::from("INTEGER"),
                 Keyword::LET => String::from("LET"),
                 Keyword::VAR => String::from("VAR"),
-                Keyword::WHILE => String::from("WHILE")
+                Keyword::WHILE => String::from("WHILE"),
+                Keyword::IN => String::from("IN"),
+                Keyword::STRING => String::from("STRINGDEF")
         }
     }
 }
