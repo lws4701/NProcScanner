@@ -1,3 +1,16 @@
+/*
+Copyright 2025 Lewis Smith
+
+Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+
+2. Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+3. Neither the name of the copyright holder nor the names of its contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 use std::env;
 use std::error::Error;
 use std::fs;
@@ -25,6 +38,7 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
             break;
         }
         match file_contents.get(current).unwrap() {
+            // Handle single character tokens
             ';' => {
                 tokens.push(Token::SEMICOLON);
                 current += 1;
@@ -39,15 +53,6 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
             }
             '-' => {
                 tokens.push(Token::SUBTRACT);
-                current += 1;
-            }
-            '*' => {
-                current += 1;
-                match file_contents.get(current).unwrap() {
-                    '*' => tokens.push(Token::EXPONENT),
-                    _ => tokens.push(Token::MULTIPLY)
-                }
-                tokens.push(Token::MULTIPLY);
                 current += 1;
             }
             '^' => {
@@ -76,6 +81,16 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
             }
             ']' => {
                 tokens.push(Token::CLOSEBRACKET);
+                current += 1;
+            }
+            // Handle multi-character tokens
+            '*' => {
+                current += 1;
+                match file_contents.get(current).unwrap() {
+                    '*' => tokens.push(Token::EXPONENT),
+                    _ => tokens.push(Token::MULTIPLY),
+                }
+                tokens.push(Token::MULTIPLY);
                 current += 1;
             }
             '.' => {
@@ -161,6 +176,7 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                     current += 1;
                 }
                 match buf.as_str() {
+                    // Handle keywords
                     "digit" => tokens.push(Token::DIGIT),
                     "float" => tokens.push(Token::FLOAT),
                     "string" => tokens.push(Token::STRING),
@@ -188,7 +204,6 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                 tokens.push(Token::IDENTIFIER(buf));
             }
             '0'..='9' => {
-                // Handle digits and floating point numbers
                 let mut buf: String = String::new();
                 let mut current_char: char = *file_contents.get(current).unwrap();
                 while current_char.is_digit(10) || current_char == '.' {
@@ -197,8 +212,10 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                     current_char = *file_contents.get(current).unwrap();
                 }
                 if let Ok(item) = buf.parse::<i128>() {
+                    // Handle digit literals
                     tokens.push(Token::DIGITLITERAL(item));
                 } else if let Ok(item) = buf.parse::<f64>() {
+                    // Handle floating point literals
                     tokens.push(Token::FPLITERAL(item));
                 } else {
                     tokens.push(Token::INVALID);
@@ -207,7 +224,6 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
             _ => {
                 if !file_contents.get(current).unwrap().is_whitespace() {
                     tokens.push(Token::INVALID)
-                    
                 }
                 current += 1;
             }
