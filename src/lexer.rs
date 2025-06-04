@@ -51,6 +51,10 @@ pub fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                 tokens.push(Token::CLOSEBRACKET);
                 current += 1;
             }
+            '.' => {
+                tokens.push(Token::DOT);
+                current += 1;
+            }
             // Handle multi-character tokens
             '*' => {
                 current += 1;
@@ -58,15 +62,7 @@ pub fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                     '*' => tokens.push(Token::EXPONENT),
                     _ => tokens.push(Token::MULTIPLY),
                 }
-                tokens.push(Token::MULTIPLY);
                 current += 1;
-            }
-            '.' => {
-                current += 1;
-                match file_contents.get(current).unwrap() {
-                    '.' => tokens.push(Token::DOUBLEDOT),
-                    _ => tokens.push(Token::DOT),
-                }
             }
             '=' => {
                 current += 1;
@@ -156,6 +152,7 @@ pub fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                     "while" => tokens.push(Token::WHILE),
                     "break" => tokens.push(Token::BREAK),
                     "put" => tokens.push(Token::PUT),
+                    "until" => tokens.push(Token::UNTIL),
                     "continue" => tokens.push(Token::CONTINUE),
                     "func" => tokens.push(Token::FUNC),
                     "in" => tokens.push(Token::IN),
@@ -235,7 +232,6 @@ pub enum Token {
     XOR,
     BITWISEAND,
     BITWISEOR,
-    DOUBLEDOT,
     INVALID,
     DIGIT,
     FLOAT,
@@ -245,10 +241,47 @@ pub enum Token {
     PUT,
     IF,
     ELSE,
+    UNTIL,
     WHILE,
     FOR,
     BREAK,
     CONTINUE,
     FUNC,
     IN,
+}
+
+#[cfg(test)]
+mod test {
+    use crate::lexer::{Token, tokenize_input};
+
+    #[test]
+    fn test_basic_functionality() {
+        let test_string: Vec<char> = String::from(
+            "func main(string[] args) { \
+          var digit hamster = 5; \
+          hamster = hamster << 1; \
+          var float cheese = 9.01; \
+          for i in 0 until hamster { \
+            put (i ^ hamster) * cheese; \
+          put \"It works!\"; \
+          for i in 3 until 7 { \
+            if (i == 4) { \
+              continue; \
+            else if i == 6 { \
+              break; \
+            } \
+            else { \
+              put i; \
+            } \
+          } \
+          cheese = cheese ^ cheese; \
+          let digit foo = 9009034; \
+          } \
+        ",
+        )
+        .chars()
+        .collect();
+        let tokens: Vec<Token> = tokenize_input(test_string);
+        assert_eq!(tokens.len(), 94);
+    }
 }
