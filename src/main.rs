@@ -29,6 +29,10 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                 tokens.push(Token::SEMICOLON);
                 current += 1;
             }
+            ',' => {
+                tokens.push(Token::COMMA);
+                current += 1;
+            }
             '+' => {
                 tokens.push(Token::ADD);
                 current += 1;
@@ -224,6 +228,7 @@ enum Token {
     MULTIPLY,
     DIVIDE,
     EXPONENT,
+    COMMA,
     BITSLEFT,
     BITSRIGHT,
     EQUALS,
