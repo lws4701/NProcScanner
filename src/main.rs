@@ -186,13 +186,27 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
             '0'..='9' => {
                 // Handle digits and floating point numbers
                 let mut buf: String = String::new();
-                while file_contents.get(current).unwrap().is_digit(10) {
+                let mut current_char: char = *file_contents.get(current).unwrap();
+                while current_char.is_digit(10) || current_char == '.' {
                     buf.push(*file_contents.get(current).unwrap());
                     current += 1;
+                    current_char = *file_contents.get(current).unwrap();
                 }
-                tokens.push(Token::DIGITLITERAL(buf.parse().unwrap()));
+                if let Ok(item) = buf.parse::<i128>() {
+                    tokens.push(Token::DIGITLITERAL(item));
+                } else if let Ok(item) = buf.parse::<f64>() {
+                    tokens.push(Token::FPLITERAL(item));
+                } else {
+                    tokens.push(Token::INVALID);
+                }
             }
-            _ => tokens.push(Token::INVALID),
+            _ => {
+                if !file_contents.get(current).unwrap().is_whitespace() {
+                    tokens.push(Token::INVALID)
+                    
+                }
+                current += 1;
+            }
         }
     }
     tokens
