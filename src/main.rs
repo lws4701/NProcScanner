@@ -38,11 +38,16 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                 current += 1;
             }
             '*' => {
+                current += 1;
+                match file_contents.get(current).unwrap() {
+                    '*' => tokens.push(Token::EXPONENT),
+                    _ => tokens.push(Token::MULTIPLY)
+                }
                 tokens.push(Token::MULTIPLY);
                 current += 1;
             }
             '^' => {
-                tokens.push(Token::EXPONENT);
+                tokens.push(Token::XOR);
                 current += 1;
             }
             '(' => {
@@ -100,6 +105,7 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                 current += 1;
                 match file_contents.get(current).unwrap() {
                     '=' => tokens.push(Token::GREATEREQUALS),
+                    '>' => tokens.push(Token::BITSRIGHT),
                     _ => tokens.push(Token::GREATERTHAN),
                 }
             }
@@ -107,6 +113,7 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                 current += 1;
                 match file_contents.get(current).unwrap() {
                     '=' => tokens.push(Token::LESSEQUALS),
+                    '<' => tokens.push(Token::BITSLEFT),
                     _ => tokens.push(Token::LESSTHAN),
                 }
             }
@@ -115,6 +122,20 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                 match file_contents.get(current).unwrap() {
                     '=' => tokens.push(Token::NOTEQUALS),
                     _ => tokens.push(Token::NEGATION),
+                }
+            }
+            '&' => {
+                current += 1;
+                match file_contents.get(current).unwrap() {
+                    '&' => tokens.push(Token::AND),
+                    _ => tokens.push(Token::BITWISEAND),
+                }
+            }
+            '|' => {
+                current += 1;
+                match file_contents.get(current).unwrap() {
+                    '|' => tokens.push(Token::OR),
+                    _ => tokens.push(Token::BITWISEOR),
                 }
             }
             '"' => {
@@ -146,6 +167,7 @@ fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                     "for" => tokens.push(Token::FOR),
                     "while" => tokens.push(Token::WHILE),
                     "break" => tokens.push(Token::BREAK),
+                    "put" => tokens.push(Token::PUT),
                     "continue" => tokens.push(Token::CONTINUE),
                     "func" => tokens.push(Token::FUNC),
                     "in" => tokens.push(Token::IN),
@@ -188,6 +210,8 @@ enum Token {
     MULTIPLY,
     DIVIDE,
     EXPONENT,
+    BITSLEFT,
+    BITSRIGHT,
     EQUALS,
     LESSTHAN,
     GREATERTHAN,
@@ -203,6 +227,11 @@ enum Token {
     DOUBLEEQUALS,
     GREATEREQUALS,
     LESSEQUALS,
+    AND,
+    OR,
+    XOR,
+    BITWISEAND,
+    BITWISEOR,
     DOUBLEDOT,
     INVALID,
     DIGIT,
@@ -210,6 +239,7 @@ enum Token {
     STRING,
     LET,
     VAR,
+    PUT,
     IF,
     ELSE,
     WHILE,
