@@ -11,6 +11,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
 pub fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
     let mut current: usize = 0;
     let mut tokens: Vec<Token> = Vec::new();
@@ -169,6 +170,8 @@ pub fn tokenize_input(file_contents: Vec<char>) -> Vec<Token> {
                     "continue" => tokens.push(Token::CONTINUE),
                     "func" => tokens.push(Token::FUNC),
                     "in" => tokens.push(Token::IN),
+                    "inf" => tokens.push(Token::INF),
+                    "nil" => tokens.push(Token::NIL),
                     _ => tokens.push(Token::IDENTIFIER(buf)),
                 }
             }
@@ -261,6 +264,8 @@ pub enum Token {
     CONTINUE,
     FUNC,
     IN,
+    INF,
+    NIL,
 }
 
 #[cfg(test)]
